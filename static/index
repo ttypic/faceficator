@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Faceficator</title>
+
+    <style type="text/css">
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+            Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+        }
+
+        button {
+            cursor: pointer;
+            margin: 0;
+            font-size: 1rem;
+            background-color: white;
+            color: black;
+            border: 1px solid black;
+            border-radius: 0.25rem;
+            padding: 0.25rem;
+            outline: none;
+        }
+
+        .header {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+            height: 80px;
+        }
+
+        .header > img {
+            height: 70px;
+        }
+
+        .footer {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .footer > img {
+            max-width: 100%;
+        }
+
+        .carousel {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .carousel > div {
+            display: flex;
+            flex-direction: row;
+            width: 120px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #source-img {
+            height: 100px;
+        }
+
+        .carousel > button {
+            cursor: pointer;
+        }
+
+        .main {
+            display: grid;
+            grid-template-columns: 1fr 250px 2fr;
+            grid-template-rows: 1fr 1fr;
+            grid-template-areas:
+                    "source button output"
+                    "dest button output";
+            padding: 0 4rem;
+            min-height: 508px;
+        }
+
+        #preview-img {
+            max-height: 150px;
+            max-width: 100%;
+        }
+
+        .upload-wrapper {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .upload-wrapper > button {
+            margin-left: 1rem;
+        }
+
+        #faceficate-btn {
+            font-size: 1.2rem;
+            position: relative;
+            margin: auto;
+            padding: 19px 22px;
+            transition: all .2s ease;
+            border: none;
+        }
+
+        #faceficate-btn:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: block;
+            border-radius: 28px;
+            background: rgba(255, 171, 157, .5);
+            width: 56px;
+            height: 56px;
+            transition: all .3s ease;
+        }
+
+        #faceficate-btn > span {
+            position: relative;
+            font-size: 16px;
+            line-height: 18px;
+            letter-spacing: .25em;
+            text-transform: uppercase;
+            vertical-align: middle;
+        }
+
+        #faceficate-btn > svg {
+            position: relative;
+            top: 0;
+            margin-left: 10px;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke: #000;
+            stroke-width: 2;
+            transform: translateX(-5px);
+            transition: all .3s ease;
+        }
+
+        #faceficate-btn:hover:before {
+            width: 100%;
+            background: rgba(255, 171, 157)
+        }
+
+        #faceficate-btn > svg:hover {
+            transform: translateX(0);
+        }
+
+        #faceficate-btn > svg:active {
+            transform: scale(.96);
+        }
+
+        #swapped-img {
+            max-width: 100%;
+            max-height: 508px;
+        }
+
+        /* loader styles: */
+
+        .loader {
+            font-size: 10px;
+            margin: 50px auto;
+            text-indent: -9999em;
+            width: 11em;
+            height: 11em;
+            border-radius: 50%;
+            background: #000000;
+            background: -moz-linear-gradient(left, #000000 10%, rgba(255, 255, 255, 0) 42%);
+            background: -webkit-linear-gradient(left, #000000 10%, rgba(255, 255, 255, 0) 42%);
+            background: -o-linear-gradient(left, #000000 10%, rgba(255, 255, 255, 0) 42%);
+            background: -ms-linear-gradient(left, #000000 10%, rgba(255, 255, 255, 0) 42%);
+            background: linear-gradient(to right, #000000 10%, rgba(255, 255, 255, 0) 42%);
+            position: relative;
+            -webkit-animation: load3 1.4s infinite linear;
+            animation: load3 1.4s infinite linear;
+            -webkit-transform: translateZ(0);
+            -ms-transform: translateZ(0);
+            transform: translateZ(0);
+        }
+
+        .loader:before {
+            width: 50%;
+            height: 50%;
+            background: #000000;
+            border-radius: 100% 0 0 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            content: '';
+        }
+
+        .loader:after {
+            background: #ffffff;
+            width: 75%;
+            height: 75%;
+            border-radius: 50%;
+            content: '';
+            margin: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+        }
+
+        @-webkit-keyframes load3 {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes load3 {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <img src="/static/logos/logo.jpg" alt=""/>
+</header>
+
+<main class="main">
+    <div style="grid-area: source;">
+        <h2>Source face</h2>
+        <div class="carousel">
+            <button onclick="prevSource()"> <</button>
+            <div>
+                <img id="source-img" src="/static/sources/face.png" alt=""/>
+            </div>
+            <button onclick="nextSource()"> ></button>
+        </div>
+    </div>
+    <div style="grid-area: dest; min-height: 200px;">
+        <div class="upload-wrapper">
+            <h2>Initial Photo</h2>
+            <button id="file-swap-btn" onclick="choseSwappingFile()">Upload</button>
+        </div>
+        <input type="file" id="file-swap" style="display: none" onchange="readImg(this)"/>
+        <img id="preview-img" alt=""/>
+    </div>
+    <div style="grid-area: button; align-self: center; justify-self: center;">
+        <button id="faceficate-btn" onclick="faceficate()">
+            <span>Faceficate</span>
+            <svg width="13px" height="10px" viewBox="0 0 13 10">
+                <path d="M1,5 L11,5"></path>
+                <polyline points="8 1 12 5 8 9"></polyline>
+            </svg>
+        </button>
+    </div>
+    <div style="grid-area: output; align-self: center; justify-self: center;">
+        <img id="swapped-img" src="/static/logos/stub.png"/>
+        <div class="loader" style="display: none;">Loading...</div>
+    </div>
+</main>
+
+<footer class="footer">
+    <img src="/static/logos/background.png" alt=""/>
+</footer>
+
+
+<script type="application/javascript">
+    let currentSourceIndex = 0;
+
+    const sources = [
+        'static/sources/face.png',
+        'static/sources/ad.jpeg',
+        'static/sources/jr.png',
+        'static/sources/np.png'
+    ]
+
+    function choseSwappingFile() {
+        document.getElementById('file-swap').click();
+    }
+
+    function faceficate() {
+        const files = document.getElementById('file-swap').files;
+        const formData = new FormData();
+        formData.append('file', files[0]);
+
+        document.querySelector('.loader').style.display = 'block';
+        document.querySelector('#swapped-img').style.display = 'none';
+
+        fetch(`/func/faceficate?src_url=${sources[currentSourceIndex]}`, {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                document.getElementById('swapped-img').src = data.result;
+            })
+            .catch(error => {
+                console.error(error)
+            })
+            .finally(() => {
+                document.querySelector('.loader').style.display = 'none';
+                document.querySelector('#swapped-img').style.display = 'block';
+            })
+    }
+
+    function readImg(input) {
+        if (!(input.files && input.files[0])) return;
+        const reader = new FileReader();
+
+        reader.onload = evt => {
+            document.getElementById('preview-img').src = evt.target.result;
+        };
+
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    function nextSource() {
+        if (currentSourceIndex + 1 < sources.length) {
+            currentSourceIndex++;
+        } else {
+            currentSourceIndex = 0;
+        }
+
+        document.getElementById('source-img').src = '/' + sources[currentSourceIndex];
+    }
+
+    function prevSource() {
+        if (currentSourceIndex > 0) {
+            currentSourceIndex--;
+        } else {
+            currentSourceIndex = sources.length - 1;
+        }
+
+        document.getElementById('source-img').src = '/' + sources[currentSourceIndex];
+    }
+</script>
+</body>
+</html>

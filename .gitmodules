@@ -1,0 +1,3 @@
+[submodule "FaceSwap"]
+	path = FaceSwap
+	url = https://github.com/wuhuikai/FaceSwap
